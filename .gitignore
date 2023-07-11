@@ -3,3 +3,4 @@ img/
 lab.py
 dist/
 robin.egg-info/
+.pytest_cache/
