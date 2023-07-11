@@ -1,0 +1,12 @@
+LICENSE
+README.md
+pyproject.toml
+robingrad/__init__.py
+robingrad/graph.py
+robingrad/lab.py
+robingrad/tensor.py
+robingrad.egg-info/PKG-INFO
+robingrad.egg-info/SOURCES.txt
+robingrad.egg-info/dependency_links.txt
+robingrad.egg-info/requires.txt
+robingrad.egg-info/top_level.txt
