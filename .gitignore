@@ -2,5 +2,5 @@ __pycache__
 img/
 lab.py
 dist/
-robin.egg-info/
+robingrad.egg-info/
 .pytest_cache/
