@@ -1,3 +1,5 @@
 __pycache__
 img/
 lab.py
+dist/
+robin.egg-info/
