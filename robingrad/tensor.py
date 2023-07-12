@@ -76,6 +76,39 @@ class Tensor:
 
         return out 
     
+    def tanh(self: "Tensor") -> "Tensor":
+        x = self.data
+        t = (np.exp(2*x) - 1)/(np.exp(2*x) + 1)
+        out = Tensor(t, dtype=self.data.dtype, _children=(self,), _op="tanh()", _origin="tanh")
+        
+        def _backward():
+            self.grad += (1 - t**2) * out.grad
+        out._backward = _backward
+        
+        return out
+
+    def exp(self: "Tensor") -> "Tensor":
+        x = self.data
+        out = Tensor(np.exp(x), dtype=self.data.dtype, _children=(self,), _op="exp()", _origin="exp")
+        
+        def _backward():
+            self.grad += out.data * out.grad 
+        out._backward = _backward
+        
+        return out
+    
+    def log(self: "Tensor") -> "Tensor":
+        if np.any(self.data <= 0):
+            raise ValueError("can't log negative or zero value")
+        x = self.data
+        out = Tensor(np.log(x), dtype=self.data.dtype, _children=(self,), _op="log()", _origin="log")
+
+        def _backward():
+            self.grad = (x**(-1)) * out.grad
+        out._backward = _backward
+
+        return out
+    
     def __add__(self: "Tensor", other: Union["Tensor", np.ndarray, List, int, float]) -> "Tensor":
         other = other if isinstance(other, Tensor) else Tensor.broadcast(self, other, dtype=self.data.dtype)
         out = Tensor(self.data + other.data, dtype=self.data.dtype, _children=(self, other), _op='+', _origin="__add__", )
