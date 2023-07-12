@@ -65,16 +65,16 @@ class Tensor:
 
         return out
     
-    # def sigmoid(self: "Tensor") -> "Tensor":
-    #     x = self.data
-    #     t = (1 + math.exp(-x))**-1
-    #     out = Value(t, (self,), 'sigmoid')
+    def sigmoid(self: "Tensor") -> "Tensor":
+        x = self.data
+        t = (1 + np.exp(-x))**-1
+        out = Tensor(t, dtype=self.data.dtype, _children=(self,), _op="sigmoid()", _origin="sigmoid")
         
-    #     def _backward():
-    #         self.grad += t*(1-t) * out.grad 
-    #     out._backward = _backward
+        def _backward():
+            self.grad += t*(1-t) * out.grad 
+        out._backward = _backward
 
-    #     return out 
+        return out 
     
     def __add__(self: "Tensor", other: Union["Tensor", np.ndarray, List, int, float]) -> "Tensor":
         other = other if isinstance(other, Tensor) else Tensor.broadcast(self, other, dtype=self.data.dtype)
