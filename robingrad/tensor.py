@@ -5,13 +5,17 @@ DType = TypeVar("DType", bound=np.dtype)
 
 # Trust in broadcasting rules
 class Tensor:
-    def __init__(self, data: Union[np.ndarray, List, int, float], dtype: DType = np.float32, _children: Tuple =(), _op: str = "", _origin: str = "tensor"):
+    def __init__(self, data: Union[np.ndarray, List, int, float], dtype: DType = np.float32, requires_grad: bool = False, _children: Tuple =(), _op: str = "", _origin: str = "tensor"):
         self.data = np.asarray(data).astype(dtype)
-        self.grad = np.zeros_like(data).astype(dtype)
+        if requires_grad:
+            self.grad = np.zeros_like(data).astype(dtype)
+        else:
+            self.grad = None
         self._backward = lambda: None
         self._prev = set(_children)
         self._op = _op
         self._origin = _origin 
+        self.requires_grad = requires_grad
     
     @staticmethod
     def zeros(shape: Tuple, **kwargs) -> "Tensor": return Tensor(np.zeros(shape), _origin="zeros", **kwargs)
@@ -48,7 +52,7 @@ class Tensor:
     def uniform(low: Union[int, float], high: Union[int, float], shape: Tuple, **kwargs) -> "Tensor": return Tensor(np.random.uniform(low, high, shape), _origin="uniform", **kwargs)    
 
     def sum(self: "Tensor") -> "Tensor":
-        out = Tensor(self.data.sum(), dtype=self.data.dtype, _children=(self,), _op="sum()", _origin="sum")
+        out = Tensor(self.data.sum(), dtype=self.data.dtype, _children=(self,), _op="sum()", _origin="sum", requires_grad=self.requires_grad)
         
         def _backward():
             self.grad += np.ones_like(self.data) * out.grad
@@ -57,7 +61,7 @@ class Tensor:
         return out
     
     def relu(self: "Tensor") -> "Tensor":
-        out = Tensor(np.maximum(0, self.data), dtype=self.data.dtype, _children=(self,), _op="relu()", _origin="ReLU")
+        out = Tensor(np.maximum(0, self.data), dtype=self.data.dtype, _children=(self,), _op="relu()", _origin="ReLU", requires_grad=self.requires_grad)
 
         def _backward():
             self.grad += (out.data > 0) * out.grad
@@ -68,7 +72,7 @@ class Tensor:
     def sigmoid(self: "Tensor") -> "Tensor":
         x = self.data
         t = (1 + np.exp(-x))**-1
-        out = Tensor(t, dtype=self.data.dtype, _children=(self,), _op="sigmoid()", _origin="sigmoid")
+        out = Tensor(t, dtype=self.data.dtype, _children=(self,), _op="sigmoid()", _origin="sigmoid", requires_grad=self.requires_grad)
         
         def _backward():
             self.grad += t*(1-t) * out.grad 
@@ -79,7 +83,7 @@ class Tensor:
     def tanh(self: "Tensor") -> "Tensor":
         x = self.data
         t = (np.exp(2*x) - 1)/(np.exp(2*x) + 1)
-        out = Tensor(t, dtype=self.data.dtype, _children=(self,), _op="tanh()", _origin="tanh")
+        out = Tensor(t, dtype=self.data.dtype, _children=(self,), _op="tanh()", _origin="tanh", requires_grad=self.requires_grad)
         
         def _backward():
             self.grad += (1 - t**2) * out.grad
@@ -89,7 +93,7 @@ class Tensor:
 
     def exp(self: "Tensor") -> "Tensor":
         x = self.data
-        out = Tensor(np.exp(x), dtype=self.data.dtype, _children=(self,), _op="exp()", _origin="exp")
+        out = Tensor(np.exp(x), dtype=self.data.dtype, _children=(self,), _op="exp()", _origin="exp", requires_grad=self.requires_grad)
         
         def _backward():
             self.grad += out.data * out.grad 
@@ -101,7 +105,7 @@ class Tensor:
         if np.any(self.data <= 0):
             raise ValueError("can't log negative or zero value")
         x = self.data
-        out = Tensor(np.log(x), dtype=self.data.dtype, _children=(self,), _op="log()", _origin="log")
+        out = Tensor(np.log(x), dtype=self.data.dtype, _children=(self,), _op="log()", _origin="log", requires_grad=self.requires_grad)
 
         def _backward():
             self.grad = (x**(-1)) * out.grad
@@ -110,7 +114,7 @@ class Tensor:
         return out
     
     def __add__(self: "Tensor", other: Union["Tensor", np.ndarray, List, int, float]) -> "Tensor":
-        other = other if isinstance(other, Tensor) else Tensor.broadcast(self, other, dtype=self.data.dtype)
+        other = other if isinstance(other, Tensor) else Tensor.broadcast(self, other, dtype=self.data.dtype, requires_grad=self.requires_grad)
         out = Tensor(self.data + other.data, dtype=self.data.dtype, _children=(self, other), _op='+', _origin="__add__", )
         
         def _backward():
@@ -121,7 +125,7 @@ class Tensor:
         return out
     
     def __mul__(self: "Tensor", other: Union["Tensor", np.ndarray, List, int, float]) -> "Tensor":
-        other = other if isinstance(other, Tensor) else Tensor.broadcast(self, other, dtype=self.data.dtype)
+        other = other if isinstance(other, Tensor) else Tensor.broadcast(self, other, dtype=self.data.dtype, requires_grad=self.requires_grad)
         out = Tensor(self.data * other.data, dtype=self.data.dtype, _children=(self, other), _op='*', _origin="__mul__")
 
         def _backward():
@@ -133,7 +137,7 @@ class Tensor:
     
     def __pow__(self: "Tensor", other: Union[int, float]) -> "Tensor":
         assert isinstance(other, (int, float)), "only supporting int/float powers for now"
-        out = Tensor(self.data ** other, dtype=self.data.dtype, _children=(self,), _op=f'**{other}', _origin="__pow__")
+        out = Tensor(self.data ** other, dtype=self.data.dtype, _children=(self,), _op=f'**{other}', _origin="__pow__", requires_grad=self.requires_grad)
 
         def _backward():
             self.grad += (other * self.data**(other-1)) * out.grad
@@ -188,7 +192,17 @@ class Tensor:
     def dtype(self: "Tensor") -> str: return self.data.dtype
             
     def __repr__(self: "Tensor") -> str:
-        return f"Tensor: {self._origin}\ndata: \n{self.data}\ngrad: \n{self.grad}\ndtype: {self.data.dtype}\n"
-    
+        if self.requires_grad:
+            return f"Tensor: {self._origin}\ndata: \n{self.data}\ngrad: \n{self.grad}\ndtype: {self.data.dtype}\n"
+        else:
+            return f"Tensor: {self._origin}\ndata: \n{self.data}\ndtype: {self.data.dtype}\n"
+
     def __getitem__(self: "Tensor", val) -> "Tensor":
-        return Tensor(self.data[val], dtype=self.data.dtype, _children=(self,), _op="", _origin="slice")
+        return Tensor(self.data[val], dtype=self.data.dtype, _children=(self,), _op="", _origin="slice", requires_grad=self.requires_grad)
+    
+    def reshape(self: "Tensor", shape: Tuple[int, int]) -> "Tensor":
+        data = self.data.reshape(shape)
+        grad = self.grad.reshape(shape)
+        out = Tensor(data, dtype=self.data.dtype, _children=(self,), _op="reshape", _origin="reshape", requires_grad=self.requires_grad)
+        out.grad = grad
+        return out
