@@ -150,11 +150,14 @@ class Tensor:
         out = Tensor(self.data @ other.data, dtype=self.data.dtype, _children=(self, other), _op='@', _origin="__matmul__", requires_grad=self.requires_grad)
 
         def _backward():
-            self.grad += other.data.T @ out.grad
+            self.grad += out.grad @ other.data.T
             other.grad += self.data.T @ out.grad
         out._backward = _backward
 
         return out
+    
+    def __rmatmul__(self: "Tensor", other: Union["Tensor", np.ndarray, List, int, float]) -> "Tensor":
+        return self @ other
     
     def __neg__(self: "Tensor") -> "Tensor": # -self
         return self * Tensor.full_like(self, -1)
