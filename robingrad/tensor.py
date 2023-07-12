@@ -183,6 +183,9 @@ class Tensor:
             
     @property
     def shape(self: "Tensor") -> Tuple[int, int]: return self.data.shape
+
+    @property
+    def dtype(self: "Tensor") -> str: return self.data.dtype
             
     def __repr__(self: "Tensor") -> str:
         return f"Tensor: {self._origin}\ndata: \n{self.data}\ngrad: \n{self.grad}\ndtype: {self.data.dtype}\n"
