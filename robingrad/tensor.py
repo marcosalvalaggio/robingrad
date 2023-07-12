@@ -145,6 +145,17 @@ class Tensor:
 
         return out
     
+    def __matmul__(self: "Tensor", other: Union["Tensor", np.ndarray, List, int, float]) -> "Tensor":
+        other = other if isinstance(other, Tensor) else Tensor(other, dtype=self.data.dtype, requires_grad=self.requires_grad)
+        out = Tensor(self.data @ other.data, dtype=self.data.dtype, _children=(self, other), _op='@', _origin="__matmul__", requires_grad=self.requires_grad)
+
+        def _backward():
+            self.grad += other.data.T @ out.grad
+            other.grad += self.data.T @ out.grad
+        out._backward = _backward
+
+        return out
+    
     def __neg__(self: "Tensor") -> "Tensor": # -self
         return self * Tensor.full_like(self, -1)
 
