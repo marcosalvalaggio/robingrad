@@ -29,7 +29,7 @@ def draw_dot(root, filename: str = None, inspect: bool = False, format: str = 's
         if inspect:
             dot.node(name=str(id(n)), label=f"data: {np.round(n.data,4)} | grad: {np.round(n.grad,4)} | shape: {n.shape} | type: {n.data.dtype}", shape='record')
         else:
-            dot.node(name=str(id(n)), label=f"name: {n._origin} | shape: {n.shape} | type: {n.data.dtype}", shape='record')
+            dot.node(name=str(id(n)), label=f"name: {n._origin} | shape: {n.shape} | type: {n.data.dtype} | grad: {n.requires_grad}", shape='record')
         if n._op:
             dot.node(name=str(id(n)) + n._op, label=n._op)
             dot.edge(str(id(n)) + n._op, str(id(n)))
