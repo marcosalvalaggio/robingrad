@@ -56,6 +56,26 @@ class Tensor:
         
         return out
     
+    def relu(self: "Tensor") -> "Tensor":
+        out = Tensor(np.maximum(0, self.data), dtype=self.data.dtype, _children=(self,), _op="relu()", _origin="ReLU")
+
+        def _backward():
+            self.grad += (out.data > 0) * out.grad
+        out._backward = _backward
+
+        return out
+    
+    # def sigmoid(self: "Tensor") -> "Tensor":
+    #     x = self.data
+    #     t = (1 + math.exp(-x))**-1
+    #     out = Value(t, (self,), 'sigmoid')
+        
+    #     def _backward():
+    #         self.grad += t*(1-t) * out.grad 
+    #     out._backward = _backward
+
+    #     return out 
+    
     def __add__(self: "Tensor", other: Union["Tensor", np.ndarray, List, int, float]) -> "Tensor":
         other = other if isinstance(other, Tensor) else Tensor.broadcast(self, other, dtype=self.data.dtype)
         out = Tensor(self.data + other.data, dtype=self.data.dtype, _children=(self, other), _op='+', _origin="__add__", )
