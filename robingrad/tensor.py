@@ -186,3 +186,6 @@ class Tensor:
             
     def __repr__(self: "Tensor") -> str:
         return f"Tensor: {self._origin}\ndata: \n{self.data}\ngrad: \n{self.grad}\ndtype: {self.data.dtype}\n"
+    
+    def __getitem__(self: "Tensor", val) -> "Tensor":
+        return Tensor(self.data[val], dtype=self.data.dtype, _children=(self,), _op="", _origin="slice")

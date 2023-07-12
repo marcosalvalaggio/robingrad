@@ -4,3 +4,4 @@ lab.py
 dist/
 robingrad.egg-info/
 .pytest_cache/
+.ipynb_checkpoints/
