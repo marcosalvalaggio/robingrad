@@ -8,9 +8,9 @@ class TestTensor(unittest.TestCase):
 
     def test_tensor_ops(self):
         # robin
-        a = Tensor.eye(3)
-        b = Tensor.full((3,3), 3)
-        c = Tensor.ones((3,3))
+        a = Tensor.eye(3, requires_grad=True)
+        b = Tensor.full((3,3), 3., requires_grad=True)
+        c = Tensor.ones((3,3), requires_grad=True)
         loss = ((a+b-c)**2).sum()
         loss.backward()
         res_robin = a.grad.tolist()
@@ -26,8 +26,8 @@ class TestTensor(unittest.TestCase):
 
     def test_robin_micrograd(self):
         # robin
-        a = Tensor(-4.0)
-        b = Tensor(2.0)
+        a = Tensor(-4.0, requires_grad=True)
+        b = Tensor(2.0, requires_grad=True)
         c = a + b
         d = a * b + b**3
         c += c + 1

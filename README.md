@@ -9,3 +9,7 @@
 
 Something between [Tinygrad](https://github.com/tinygrad/tinygrad) and [Micrograd](https://github.com/karpathy/micrograd).
 
+### Todos
+
+* Impl.: mul, dot, linear and transpose method
+* Impl. Linear layer like Tinygrad

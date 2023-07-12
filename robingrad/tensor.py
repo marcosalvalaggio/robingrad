@@ -115,7 +115,7 @@ class Tensor:
     
     def __add__(self: "Tensor", other: Union["Tensor", np.ndarray, List, int, float]) -> "Tensor":
         other = other if isinstance(other, Tensor) else Tensor.broadcast(self, other, dtype=self.data.dtype, requires_grad=self.requires_grad)
-        out = Tensor(self.data + other.data, dtype=self.data.dtype, _children=(self, other), _op='+', _origin="__add__", )
+        out = Tensor(self.data + other.data, dtype=self.data.dtype, _children=(self, other), _op='+', _origin="__add__", requires_grad=self.requires_grad)
         
         def _backward():
             self.grad += out.grad
@@ -126,7 +126,7 @@ class Tensor:
     
     def __mul__(self: "Tensor", other: Union["Tensor", np.ndarray, List, int, float]) -> "Tensor":
         other = other if isinstance(other, Tensor) else Tensor.broadcast(self, other, dtype=self.data.dtype, requires_grad=self.requires_grad)
-        out = Tensor(self.data * other.data, dtype=self.data.dtype, _children=(self, other), _op='*', _origin="__mul__")
+        out = Tensor(self.data * other.data, dtype=self.data.dtype, _children=(self, other), _op='*', _origin="__mul__", requires_grad=self.requires_grad)
 
         def _backward():
             self.grad += other.data * out.grad
@@ -160,7 +160,7 @@ class Tensor:
         return self @ other
     
     def __neg__(self: "Tensor") -> "Tensor": # -self
-        return self * Tensor.full_like(self, -1)
+        return self * Tensor.full_like(self, -1, requires_grad=self.requires_grad)
 
     def __radd__(self: "Tensor", other: Union["Tensor", np.ndarray, List, int, float]) -> "Tensor": # other + self
         return self + other
