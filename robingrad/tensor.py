@@ -226,8 +226,20 @@ class Tensor:
         def _backward():
             self.grad += out.grad.reshape(self.shape)
         out._backward = _backward
-        
+
         return out
+    
+    def transpose(self: "Tensor", ax1: int = 1, ax2: int = 0) -> "Tensor":
+        out = Tensor(self.data.transpose(ax1, ax2), dtype=self.data.dtype, _children=(self,), _op="T", _origin="T", requires_grad=self.requires_grad)
+
+        def _backward():
+            self.grad += out.grad.transpose(ax1, ax2)
+        out._backward = _backward
+
+        return out
+
+    @property
+    def T(self: "Tensor") -> "Tensor": return self.transpose()  
     
     def linear(self: "Tensor", weight: "Tensor", bias: Optional["Tensor"] = None) -> "Tensor":
         x = self * weight if len(weight.shape) == 1 else self @ weight
