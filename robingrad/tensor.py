@@ -210,15 +210,23 @@ class Tensor:
             return f"Tensor: {self._origin}\ndata: \n{self.data}\ngrad: \n{self.grad}\ndtype: {self.data.dtype}\n"
         else:
             return f"Tensor: {self._origin}\ndata: \n{self.data}\ndtype: {self.data.dtype}\n"
-
-    def __getitem__(self: "Tensor", val) -> "Tensor":
-        return Tensor(self.data[val], dtype=self.data.dtype, _children=(self,), _op="", _origin="slice", requires_grad=self.requires_grad)
     
+    def __getitem__(self: "Tensor", val) -> "Tensor":
+        out = Tensor(self.data[val], dtype=self.data.dtype, _children=(self,), _op="slice", _origin="slice", requires_grad=self.requires_grad)
+        
+        def _backward():
+            self.grad[val] += out.grad
+        out._backward = _backward
+
+        return out
+
     def reshape(self: "Tensor", shape: Tuple[int, int]) -> "Tensor":
-        data = self.data.reshape(shape)
-        grad = self.grad.reshape(shape)
-        out = Tensor(data, dtype=self.data.dtype, _children=(self,), _op="reshape", _origin="reshape", requires_grad=self.requires_grad)
-        out.grad = grad
+        out = Tensor(self.data.reshape(shape), dtype=self.data.dtype, _children=(self,), _op="reshape", _origin="reshape", requires_grad=self.requires_grad)
+        
+        def _backward():
+            self.grad += out.grad.reshape(self.shape)
+        out._backward = _backward
+        
         return out
     
     def linear(self: "Tensor", weight: "Tensor", bias: Optional["Tensor"] = None) -> "Tensor":
