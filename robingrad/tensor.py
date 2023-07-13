@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Tuple, Union, List, TypeVar
+from typing import Tuple, Union, List, TypeVar, Optional
 
 DType = TypeVar("DType", bound=np.dtype)
 
@@ -220,3 +220,7 @@ class Tensor:
         out = Tensor(data, dtype=self.data.dtype, _children=(self,), _op="reshape", _origin="reshape", requires_grad=self.requires_grad)
         out.grad = grad
         return out
+    
+    def linear(self: "Tensor", weight: "Tensor", bias: Optional["Tensor"] = None) -> "Tensor":
+        x = self * weight if len(weight.shape) == 1 else self @ weight
+        return x + bias if bias is not None else x
