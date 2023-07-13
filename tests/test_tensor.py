@@ -85,6 +85,27 @@ class TestTensor(unittest.TestCase):
         self.assertEqual(res_robin_1, res_torch_1)
         self.assertEqual(res_robin_2, res_torch_2)
 
+    def test_reshape_matmul(self):
+        # robin 
+        a = Tensor.ones((3,2), requires_grad=True)
+        aa = a.reshape((2,3))
+        b = Tensor.full((3,2), 3., requires_grad=True)
+        c = aa @ b
+        loss = c.sum()
+        loss.backward()
+        res_robin_1 = a.grad.tolist()
+        # torch 
+        a = torch.ones((3,2), requires_grad=True)
+        aa = a.reshape((2,3))
+        b = torch.full((3,2), 3., requires_grad=True)
+        c = aa @ b
+        loss = c.sum()
+        loss.backward()
+        res_torch_1 = a.grad.numpy().tolist()
+        # test
+        self.assertEqual(res_robin_1, res_torch_1)
+
+
 
 
 
