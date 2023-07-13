@@ -181,7 +181,7 @@ class Tensor:
         return other * self**-1
     
     def backward(self: "Tensor") -> None:
-        if self.shape != () and self.shape != (1,):
+        if self.shape != () and self.shape != (1,) and self.shape != (1,1):
             raise ValueError("Backward can only be called on a scalar tensor.")
         # topological order all of the children in the graph
         topo = []
