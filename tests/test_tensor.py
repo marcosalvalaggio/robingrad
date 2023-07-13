@@ -105,6 +105,51 @@ class TestTensor(unittest.TestCase):
         # test
         self.assertEqual(res_robin_1, res_torch_1)
 
+    def test_slice(self):
+        #robin
+        a = Tensor.ones((3,3), requires_grad=True)
+        aa = a[0:2]
+        b = Tensor.full((3,2), 3., requires_grad=True)
+        c = aa @ b
+        loss = c.sum()
+        loss.backward()
+        res_robin_1 = a.grad.tolist()
+        res_robin_2 = b.grad.tolist()
+        # torch
+        a = torch.ones((3,3), requires_grad=True)
+        aa = a[0:2]
+        b = torch.full((3,2), 3., requires_grad=True)
+        c = aa @ b
+        loss = c.sum()
+        loss.backward()
+        res_torch_1 = a.grad.numpy().tolist()
+        res_torch_2 = b.grad.numpy().tolist()
+        #test
+        self.assertEqual(res_robin_1, res_torch_1)
+        self.assertEqual(res_robin_2, res_torch_2)
+
+    def test_transpose(self):
+        #robin
+        a = Tensor.ones((3,2), requires_grad=True)
+        b = a.T
+        c = Tensor.full((3,2), 3., requires_grad=True)
+        d = b @ c
+        loss = d.sum()
+        loss.backward()
+        res_robin_1 = a.grad.tolist()
+        res_robin_2 = c.grad.tolist()
+        # torch
+        a = torch.ones((3,2), requires_grad=True)
+        b = torch.transpose(a,1,0)
+        c = torch.full((3,2), 3., requires_grad=True)
+        d = b @ c
+        loss = d.sum()
+        loss.backward()
+        res_torch_1 = a.grad.numpy().tolist()
+        res_torch_2 = c.grad.numpy().tolist()
+        #test
+        self.assertEqual(res_robin_1, res_torch_1)
+        self.assertEqual(res_robin_2, res_torch_2)
 
 
 
