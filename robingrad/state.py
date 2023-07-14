@@ -2,7 +2,7 @@ from .tensor import Tensor
 from typing import List, Dict
 from collections import OrderedDict
 
-# George Hotz God
+# George Hotz is a God
 def get_state_dict(obj, prefix:str='', tensor_type=Tensor) -> Dict[str, Tensor]:
   if isinstance(obj, tensor_type): return {prefix.strip('.'):obj}
   if hasattr(obj, '_asdict'): return get_state_dict(obj._asdict(), prefix, tensor_type)  # namedtuple
