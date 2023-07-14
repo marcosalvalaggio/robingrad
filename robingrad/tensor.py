@@ -207,9 +207,9 @@ class Tensor:
             
     def __repr__(self: "Tensor") -> str:
         if self.requires_grad:
-            return f"\nTensor: {self._origin}\ndata: \n{self.data}\ngrad: \n{self.grad}\ndtype: {self.data.dtype}\n"
+            return f"Tensor: {self._origin}\ndata: \n{self.data}\ngrad: \n{self.grad}\ndtype: {self.data.dtype}"
         else:
-            return f"\nTensor: {self._origin}\ndata: \n{self.data}\ndtype: {self.data.dtype}\n"
+            return f"Tensor: {self._origin}\ndata: \n{self.data}\ndtype: {self.data.dtype}"
     
     def __getitem__(self: "Tensor", val) -> "Tensor":
         out = Tensor(self.data[val], dtype=self.data.dtype, _children=(self,), _op="slice", _origin="slice", requires_grad=self.requires_grad)
