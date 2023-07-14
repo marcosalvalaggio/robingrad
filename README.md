@@ -28,7 +28,7 @@ cd robingrad
 
 ## Examples
 
-* In the examples folder, you can find examples of models trained using the **Robingrad** library.
+* In the [examples](examples/) folder, you can find examples of models trained using the **Robingrad** library.
 * A declaration example of an MLP net using **Robingrad**:
 
 
