@@ -2,8 +2,19 @@ from .tensor import Tensor
 from typing import List, Dict
 from collections import OrderedDict
 
-# George Hotz is a God
+# Tinygrad is the best framework ever.
 def get_state_dict(obj, prefix:str='', tensor_type=Tensor) -> Dict[str, Tensor]:
+  """
+  Recursively converts an object and its nested elements into a state dictionary.
+
+  Args:
+      obj: The object to convert into a state dictionary.
+      prefix (str): Optional. The prefix to prepend to each key in the state dictionary.
+      tensor_type: Optional. The tensor type to use in the state dictionary.
+
+  Returns:
+      Dict[str, Tensor]: The state dictionary representing the object and its nested elements.
+  """
   if isinstance(obj, tensor_type): return {prefix.strip('.'):obj}
   if hasattr(obj, '_asdict'): return get_state_dict(obj._asdict(), prefix, tensor_type)  # namedtuple
   if isinstance(obj, OrderedDict): return get_state_dict(dict(obj), prefix, tensor_type)
