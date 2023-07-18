@@ -34,8 +34,8 @@ class Adam(Optimizer):
         self.t += 1
         for i, param in enumerate(self.params):
             self.first_moments[i] = self.beta1*self.first_moments[i] + (1-self.beta1)*param.grad
-            self.second_moments[i] = self.beta2*self.second_moments[i] + (1-self.beta2)*np.power(param.grad, 2)
+            self.second_moments[i] = self.beta2*self.second_moments[i] + (1-self.beta2)*(param.grad**2)
             first_moment_corrected = self.first_moments[i] / (1-self.beta1**self.t)
             second_moment_corrected = self.second_moments[i] / (1-self.beta2**self.t)
-            param.data -= self.lr * first_moment_corrected / (np.sqrt(second_moment_corrected) + self.eps)
+            param.data -= self.lr * (first_moment_corrected/np.sqrt(second_moment_corrected) + self.eps)
             
