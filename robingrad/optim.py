@@ -23,7 +23,7 @@ class SGD(Optimizer):
 
 # https://pytorch.org/docs/stable/generated/torch.optim.Adam.html
 class Adam(Optimizer):
-    def __init__(self, params: List[Tensor], lr: float = 0.0001, beta1: float = 0.9, beta2: float =  0.999, eps: float = 1e-08):
+    def __init__(self, params: List[Tensor], lr: float = 0.001, beta1: float = 0.9, beta2: float =  0.999, eps: float = 1e-08):
         super().__init__(params)
         self.lr, self.beta1, self.beta2, self.eps = lr, beta1, beta2, eps
         self.first_moments = [np.zeros_like(param.data) for param in self.params]
@@ -37,5 +37,5 @@ class Adam(Optimizer):
             self.second_moments[i] = self.beta2*self.second_moments[i] + (1-self.beta2)*(param.grad**2)
             first_moment_corrected = self.first_moments[i] / (1-self.beta1**self.t)
             second_moment_corrected = self.second_moments[i] / (1-self.beta2**self.t)
-            param.data -= self.lr * (first_moment_corrected/np.sqrt(second_moment_corrected) + self.eps)
+            param.data -= (self.lr * first_moment_corrected)/(np.sqrt(second_moment_corrected) + self.eps)
             

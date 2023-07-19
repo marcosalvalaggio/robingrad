@@ -6,3 +6,4 @@ robingrad.egg-info/
 .pytest_cache/
 .ipynb_checkpoints/
 lab.ipynb
+explore.ipynb
