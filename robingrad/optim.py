@@ -1,4 +1,4 @@
-from tinygrad.tensor import Tensor
+from robingrad.tensor import Tensor
 import numpy as np
 from typing import List
 

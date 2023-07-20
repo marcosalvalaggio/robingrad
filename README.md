@@ -15,7 +15,7 @@ Something between [Tinygrad](https://github.com/tinygrad/tinygrad) and [Microgra
 To install the current release,
 
 ```console
-pip install robingrad==0.0.4
+pip install robingrad==0.0.5
 ```
 
 From source
@@ -50,8 +50,3 @@ model = RobinNet()
 res = model(X_train[0].reshape((1,5)))
 draw_dot(res)
 ```
-
-## Todos
-
-* Implement the `optim` module.
-* Test for Linear layer.
