@@ -15,7 +15,7 @@ Something between [Tinygrad](https://github.com/tinygrad/tinygrad) and [Microgra
 To install the current release,
 
 ```console
-pip install robingrad==0.0.3
+pip install robingrad==0.0.4
 ```
 
 From source
