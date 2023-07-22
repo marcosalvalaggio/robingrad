@@ -60,6 +60,23 @@ class Tensor:
         
         return out
     
+    def mean(self, axis=None, keepdim: bool = False) -> "Tensor":
+        if axis is None:
+            data = self.data.mean()
+        else:
+            data = self.data.mean(axis=axis, keepdims=keepdim)
+        out = Tensor(data, dtype=self.data.dtype, _children=(self,), _op="μ", _origin="mean", requires_grad=self.requires_grad)
+    
+        def _backward():
+            if axis is None:
+                self.grad += np.ones_like(self.data) * out.grad / self.data.size
+            else:
+                axis_sum_size = self.data.shape[axis] if keepdim else 1
+                self.grad += np.ones_like(self.data) * out.grad / axis_sum_size
+        out._backward = _backward
+
+        return out
+
     def relu(self) -> "Tensor":
         out = Tensor(np.maximum(0, self.data), dtype=self.data.dtype, _children=(self,), _op="relu()", _origin="ReLU", requires_grad=self.requires_grad)
 
