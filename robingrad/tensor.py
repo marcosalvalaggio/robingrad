@@ -136,7 +136,8 @@ class Tensor:
         
         def _backward():
             self.grad += out.grad
-            other.grad += out.grad
+            # other.grad += out.grad
+            other.grad += np.sum(out.grad, axis=0) if len(other.data.shape) > 1 else out.grad
         out._backward = _backward
 
         return out
