@@ -151,6 +151,29 @@ class TestTensor(unittest.TestCase):
         self.assertEqual(res_robin_1, res_torch_1)
         self.assertEqual(res_robin_2, res_torch_2)
 
+    def test_mean(self):
+        # robin
+        a = Tensor.eye(3, requires_grad=True)
+        b = Tensor.full((3,3), 3., requires_grad=True)
+        c = a @ b
+        d = c.mean(axis=0, keepdim=True)
+        e = Tensor.full((1,3), 4., requires_grad=True)
+        f = d * e
+        loss = f.sum()
+        loss.backward()
+        res_robin_1 = a.grad.tolist()
+        # torch 
+        a = torch.eye(3, requires_grad=True)
+        b = torch.full((3,3), 3., requires_grad=True)
+        c = a @ b
+        d = c.mean(axis=0, keepdim=True)
+        e = torch.full((1,3), 4., requires_grad=True)
+        f = d * e
+        loss = f.sum()
+        loss.backward()
+        res_torch_1 = a.grad.numpy().tolist()
+        # test 
+        self.assertAlmostEqual(res_robin_1, res_torch_1)
 
 
 
