@@ -175,6 +175,27 @@ class TestTensor(unittest.TestCase):
         # test 
         self.assertAlmostEqual(res_robin_1, res_torch_1)
 
+    def test_new_add(self):
+        # robin
+        a = Tensor.full((5,1), 3., requires_grad=True)
+        b = Tensor.full((1,1), 2., requires_grad=True)
+        c = a + b
+        loss = c.mean()
+        loss.backward()
+        res_robin_1 = a.grad.tolist()
+        res_robin_2 = b.grad.tolist()
+        # torch
+        a = torch.full((5,1), 3., requires_grad=True)
+        b = torch.full((1,1), 2., requires_grad=True)
+        c = a + b
+        loss = c.mean()
+        loss.backward()
+        res_torch_1 = a.grad.tolist()
+        res_torch_2 = b.grad.tolist()
+        #test
+        self.assertEqual(res_robin_1, res_torch_1)
+        self.assertEqual(res_robin_2, res_torch_2)
+
 
 
 
