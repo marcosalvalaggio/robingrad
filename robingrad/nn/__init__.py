@@ -1,5 +1,5 @@
 from robingrad.tensor import Tensor
-
+from .loss import MSELoss
 
 class Linear:
     def __init__(self, in_features: int, out_features: int, bias: bool = True):
