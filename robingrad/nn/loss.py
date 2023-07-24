@@ -6,6 +6,6 @@ class MSELoss:
         self.output = output
         self.target = target
 
-    def __call__(self):
+    def __call__(self) -> "Tensor":
         return ((self.output - self.target)**2).mean()
         
