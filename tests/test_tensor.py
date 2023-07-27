@@ -196,6 +196,29 @@ class TestTensor(unittest.TestCase):
         self.assertEqual(res_robin_1, res_torch_1)
         self.assertEqual(res_robin_2, res_torch_2)
 
+    def test_flatten(self):
+        # robin 
+        a = Tensor.ones((2,3), requires_grad=True)
+        b = Tensor.full((3,2), 3., requires_grad=True)
+        c = a @ b
+        d = c.flatten()
+        loss = d.mean()
+        loss.backward()
+        res_robin_1 = a.grad.tolist()
+        res_robin_2 = b.grad.tolist()
+        # torch
+        a = torch.ones((2,3), requires_grad=True)
+        b = torch.full((3,2), 3., requires_grad=True)
+        c = a @ b
+        d = c.flatten()
+        loss = d.mean()
+        loss.backward()
+        res_torch_1 = a.grad.numpy().tolist()
+        res_torch_2 = b.grad.numpy().tolist()
+        # test 
+        self.assertEqual(res_robin_1, res_torch_1)
+        self.assertEqual(res_robin_2, res_torch_2)
+
 
 
 
