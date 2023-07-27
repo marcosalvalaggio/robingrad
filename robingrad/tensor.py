@@ -268,6 +268,6 @@ class Tensor:
 
         def _backward():
             self.grad = out.grad.reshape(self.shape)
-        out._backward
+        out._backward = _backward
 
         return out 
