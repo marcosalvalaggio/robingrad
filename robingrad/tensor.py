@@ -262,3 +262,12 @@ class Tensor:
     def linear(self, weight: "Tensor", bias: Optional["Tensor"] = None) -> "Tensor":
         x = self * weight if len(weight.shape) == 1 else self @ weight
         return x + bias if bias is not None else x
+
+    def flatten(self) -> "Tensor":
+        out = Tensor(self.data.flatten(), dtype=self.data.dtype, _children=(self,), _op="flatten", _origin="flatten", requires_grad=self.requires_grad)
+
+        def _backward():
+            self.grad = out.grad.reshape(self.shape)
+        out._backward
+
+        return out 
