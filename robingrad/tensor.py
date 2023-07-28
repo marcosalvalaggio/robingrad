@@ -148,9 +148,9 @@ class Tensor:
 
         def _backward():
             # self.grad += other.data * out.grad
-            self.grad += (np.sum(other.data, axis=0) if self.data.shape != out.data.shape else other.data) * (np.sum(out.grad, axis=0) if self.data.shape != out.data.shape else out.grad)
+            self.grad += np.sum(other.data * out.grad, axis=0) if self.data.shape != out.data.shape else (other.data * out.grad)
             # other.grad += self.data * out.grad
-            other.grad += (np.sum(self.data, axis=0) if other.data.shape != out.data.shape else self.data) * (np.sum(out.grad, axis=0) if other.data.shape != out.data.shape else out.grad)
+            other.grad += np.sum(self.data * out.grad, axis=0) if other.data.shape != out.data.shape else (self.data * out.grad)
         out._backward = _backward
 
         return out
