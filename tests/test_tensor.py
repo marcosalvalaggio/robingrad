@@ -176,7 +176,7 @@ class TestTensor(unittest.TestCase):
         self.assertAlmostEqual(res_robin_1, res_torch_1)
 
     def test_new_add(self):
-        # robin
+        # robin 1
         a = Tensor.full((5,1), 3., requires_grad=True)
         b = Tensor.full((1,1), 2., requires_grad=True)
         c = a + b
@@ -184,7 +184,7 @@ class TestTensor(unittest.TestCase):
         loss.backward()
         res_robin_1 = a.grad.tolist()
         res_robin_2 = b.grad.tolist()
-        # torch
+        # torch 1
         a = torch.full((5,1), 3., requires_grad=True)
         b = torch.full((1,1), 2., requires_grad=True)
         c = a + b
@@ -192,9 +192,28 @@ class TestTensor(unittest.TestCase):
         loss.backward()
         res_torch_1 = a.grad.tolist()
         res_torch_2 = b.grad.tolist()
-        #test
+        #test 1
         self.assertEqual(res_robin_1, res_torch_1)
         self.assertEqual(res_robin_2, res_torch_2)
+        # robin 2
+        a = Tensor.full((5,1), 3., requires_grad=True)
+        b = Tensor.full((1,1), 2., requires_grad=True)
+        c =  b + a
+        loss = c.mean()
+        loss.backward()
+        res_robin_3 = a.grad.tolist()
+        res_robin_4 = b.grad.tolist()
+        # torch 2
+        a = torch.full((5,1), 3., requires_grad=True)
+        b = torch.full((1,1), 2., requires_grad=True)
+        c = b + a
+        loss = c.mean()
+        loss.backward()
+        res_torch_3 = a.grad.tolist()
+        res_torch_4 = b.grad.tolist()
+        #test 2
+        self.assertEqual(res_robin_3, res_torch_3)
+        self.assertEqual(res_robin_4, res_torch_4)
 
     def test_flatten(self):
         # robin 
@@ -219,6 +238,24 @@ class TestTensor(unittest.TestCase):
         self.assertEqual(res_robin_1, res_torch_1)
         self.assertEqual(res_robin_2, res_torch_2)
 
-
-
+    # def test_new_mul(self):
+    #     # robin 
+    #     a = Tensor.full((5,1), 3., requires_grad=True)
+    #     b = Tensor.ones((1,1), requires_grad=True)
+    #     c = a * b
+    #     loss = c.sum()
+    #     loss.backward()
+    #     res_robin_1 = a.grad.tolist()
+    #     res_robin_2 = b.grad.tolist()
+    #     # torch 
+    #     a = torch.full((5,1), 3., requires_grad=True)
+    #     b = torch.ones((1,1), requires_grad=True)
+    #     c = a * b
+    #     loss = c.sum()
+    #     loss.backward()
+    #     res_torch_1 = a.grad.numpy().tolist()
+    #     res_torch_2 = b.grad.numpy().tolist()
+    #     # test 
+    #     self.assertEqual(res_robin_1, res_torch_1)
+    #     self.assertEqual(res_robin_2, res_torch_2)
 
