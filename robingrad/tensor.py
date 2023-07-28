@@ -147,8 +147,10 @@ class Tensor:
         out = Tensor(self.data * other.data, dtype=self.data.dtype, _children=(self, other), _op='*', _origin="__mul__", requires_grad=self.requires_grad)
 
         def _backward():
-            self.grad += other.data * out.grad
-            other.grad += self.data * out.grad
+            # self.grad += other.data * out.grad
+            self.grad += (np.sum(other.data, axis=0) if self.data.shape != out.data.shape else other.data) * (np.sum(out.grad, axis=0) if self.data.shape != out.data.shape else out.grad)
+            # other.grad += self.data * out.grad
+            other.grad += (np.sum(self.data, axis=0) if other.data.shape != out.data.shape else self.data) * (np.sum(out.grad, axis=0) if other.data.shape != out.data.shape else out.grad)
         out._backward = _backward
 
         return out
