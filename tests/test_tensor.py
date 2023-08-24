@@ -277,3 +277,15 @@ class TestTensor(unittest.TestCase):
         # test 2
         self.assertEqual(res_robin_3, res_torch_3)
         self.assertEqual(res_robin_4, res_torch_4)
+
+    def test_broadcasting(self):
+        a = Tensor.ones((2,2))
+        b = Tensor.zeros((1,))
+        c = Tensor.broadcast(a, b)
+        target_dim = (2,2)
+        self.assertEqual(c.shape, target_dim)
+        d = Tensor.ones((2,2))
+        e = 1 - a
+        self.assertEqual(e.shape, target_dim)
+
+

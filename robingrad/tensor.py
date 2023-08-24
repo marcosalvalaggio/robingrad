@@ -39,12 +39,22 @@ class Tensor:
     def ones_like(tensor: "Tensor", **kwargs) -> "Tensor": return Tensor(np.ones_like(tensor.data), _origin="ones like", **kwargs)
     
     @staticmethod
-    def broadcast(reference: "Tensor", target: "Tensor", **kwargs) -> "Tensor": 
-        if np.broadcast(reference, target).shape == np.broadcast(reference, reference).shape:
-            return Tensor(np.broadcast_to(target, reference.shape), _origin="broadcasted", **kwargs)
+    def broadcast(reference: "Tensor", target: Union["Tensor", int, float, np.ndarray], **kwargs) -> "Tensor": 
+        if isinstance(target, Tensor): 
+            if np.broadcast(reference.data, target.data).shape == np.broadcast(reference.data, reference.data).shape:
+                return Tensor(np.broadcast_to(target.data, reference.shape), _origin="broadcasted", **kwargs)
+            else:
+                dim1 = np.broadcast(reference.data, target.data).shape
+                dim2 = np.broadcast(reference.data, reference.data).shape
+                raise ValueError(f"Tensors are not broadcastable. Info ref-target {dim1}, info ref-ref {dim2}")
         else:
-            raise ValueError("Tensors are not broadcastable.")
-        
+            if np.broadcast(reference.data, target).shape == np.broadcast(reference.data, reference.data).shape:
+                return Tensor(np.broadcast_to(target, reference.shape), _origin="broadcasted", **kwargs)
+            else:
+                dim1 = np.broadcast(reference.data, target).shape
+                dim2 = np.broadcast(reference.data, reference.data).shape
+                raise ValueError(f"Tensors are not broadcastable. Info ref-target {dim1}, info ref-ref {dim2}")
+ 
     @staticmethod
     def normal(mean: Union[int, float], std: Union[int, float], shape: Tuple, **kwargs) -> "Tensor": return Tensor(np.random.normal(mean, std, shape), _origin="normal", **kwargs)
         

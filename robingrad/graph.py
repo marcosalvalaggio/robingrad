@@ -27,7 +27,11 @@ def draw_dot(root, filename: str = None, inspect: bool = False, format: str = 's
 
     for n in nodes:
         if inspect:
-            dot.node(name=str(id(n)), label=f"data: {np.round(n.data,4)} | grad: {np.round(n.grad,4)} | shape: {n.shape} | type: {n.data.dtype}", shape='record')
+            try:
+                dot.node(name=str(id(n)), label=f"data: {np.round(n.data,4)} | grad: {np.round(n.grad,4)} | shape: {n.shape} | type: {n.data.dtype}", shape='record')
+            except Exception as e:
+                print(e)
+                print("Remember to defire requires_grad=True in the Tensors if you want to use the inspected graph")
         else:
             dot.node(name=str(id(n)), label=f"name: {n._origin} | shape: {n.shape} | type: {n.data.dtype} | grad: {n.requires_grad}", shape='record')
         if n._op:
