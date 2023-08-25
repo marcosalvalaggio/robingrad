@@ -119,7 +119,7 @@ class Tensor:
         return out
 
     def exp(self) -> "Tensor":
-        x = self.data
+        x = np.where(self.data > 88, 88, self.data)
         out = Tensor(np.exp(x), dtype=self.data.dtype, _children=(self,), _op="exp()", _origin="exp", requires_grad=self.requires_grad)
         
         def _backward():
@@ -131,9 +131,9 @@ class Tensor:
     def log(self) -> "Tensor":
         epsilon = 1e-20
         if np.any(self.data < 0):
-            raise ValueError("can't log negative or zero value")
-        x = self.data
-        out = Tensor(np.log(x+epsilon), dtype=self.data.dtype, _children=(self,), _op="log()", _origin="log", requires_grad=self.requires_grad)
+            raise ValueError(f"can't log: {self.data}")
+        x = np.where(self.data == 0, self.data+epsilon, self.data)
+        out = Tensor(np.log(x), dtype=self.data.dtype, _children=(self,), _op="log()", _origin="log", requires_grad=self.requires_grad)
 
         def _backward():
             self.grad = (x**(-1)) * out.grad
