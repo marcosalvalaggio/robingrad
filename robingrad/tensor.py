@@ -129,10 +129,11 @@ class Tensor:
         return out
     
     def log(self) -> "Tensor":
-        if np.any(self.data <= 0):
+        epsilon = 1e-20
+        if np.any(self.data < 0):
             raise ValueError("can't log negative or zero value")
         x = self.data
-        out = Tensor(np.log(x), dtype=self.data.dtype, _children=(self,), _op="log()", _origin="log", requires_grad=self.requires_grad)
+        out = Tensor(np.log(x+epsilon), dtype=self.data.dtype, _children=(self,), _op="log()", _origin="log", requires_grad=self.requires_grad)
 
         def _backward():
             self.grad = (x**(-1)) * out.grad
